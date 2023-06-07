@@ -75,20 +75,24 @@ function Invoke-MSGraphMethod {
     param (
         [Parameter(ValueFromPipeline = $true, Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [PSTypeName('PSP-MSGraph-Token')]$Token,
+        [PSTypeName('PSP_MSGraph_Token')]$Token,
         [Parameter(Mandatory = $true)]
         [string]$Uri,
         [Parameter()]
         $Body,
         [Parameter(Mandatory = $true)]
         [ValidateSet('Get', 'Post', 'Delete', 'Put', 'Patch', 'Options')]
-        $Method
+        $Method,
+        [switch]$AdvancedFilter
     )
     begin {
         $AuthHeader = @{
             'Content-Type'  = 'application/json'
             'Authorization' = ("{0} {1}" -f $($Token.TokenType), $($Token.TokenContent))
             'ExpiresOn'     = $Token.TokenExpiration
+        }
+        if ($AdvancedFilter){
+            $AuthHeader.ConsistencyLevel = 'eventual'
         }
         $QueryResults = @()
     }

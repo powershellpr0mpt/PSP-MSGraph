@@ -48,14 +48,17 @@ function New-MSGraphDeviceCode {
         [string]$ClientId,
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [string]$TenantId
+        [string]$TenantId,
+        [Parameter()]
+        [ValidateSet('https://graph.microsoft.com/.default','https://management.core.windows.net/.default')]
+        [string]$Scope = 'https://graph.microsoft.com/.default'
     )
     #use permissions/scope as assigned to Application
-    [string]$Scope = 'https://graph.microsoft.com/.default'
-    [string]$Resource = 'https://graph.microsoft.com/'
+    # [string]$Scope = 'https://graph.microsoft.com/.default'
+    # [string]$Resource = 'https://graph.microsoft.com/'
     $DeviceUri = "https://login.microsoftonline.com/$tenantId/oauth2/devicecode"
     $DeviceBody = @{
-        resource  = $Resource
+        # resource  = $Resource
         client_id = $ClientId
         scope     = $Scope
     }
@@ -69,13 +72,17 @@ function New-MSGraphDeviceCode {
     }
 
     try {
-        $DeviceCode = Invoke-RestMethod @MethodProperties
-        $DeviceCode
-        $DeviceCode.user_code | clip
-        Start-Process "https://microsoft.com/devicelogin"
-
+        $DeviceCodeJson = Invoke-WebRequest @MethodProperties
+        if ($DeviceCodeJson.StatusCode -eq 200) {
+            $DeviceCode = $DeviceCodeJson.Content | ConvertFrom-Json
+            $DeviceCode.user_code | clip
+            Start-Process "https://microsoft.com/devicelogin"
+        } else {
+            Write-Error "Unable to get device code"
+            throw $_.Exception.Message
+        }
     } catch {
         Write-Error "Unable to get device code"
-        throw
+        throw $_.Exception.Message
     }
 }

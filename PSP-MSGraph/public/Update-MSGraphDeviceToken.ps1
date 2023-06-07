@@ -40,7 +40,7 @@ https://github.com/powershellpr0mpt
 #>
 
 function Update-MSGraphDeviceToken {
-    [OutputType('PSP-MSGraph-Token')]
+    [OutputType('PSP_MSGraph_Token')]
     [Cmdletbinding()]
     param(
         [Parameter(Mandatory)]
@@ -73,16 +73,19 @@ function Update-MSGraphDeviceToken {
     }
 
     try {
-        $AccessToken = Invoke-RestMethod @MethodProperties
-
-        [PSCustomObject]@{
-            PSTypeName      = 'PSP-MSGraph-Token'
-            TokenScope      = $AccessToken.scope
-            TokenType       = $AccessToken.token_type
-            TokenContent    = $AccessToken.access_token
-            TokenExpiration = $AccessToken.expires_in
-            TokenRefresh    = $AccessToken.refresh_token
-            TokenId         = $AccessToken.id_token
+        $AccessTokenJson = Invoke-WebRequest @MethodProperties
+        if ($accesstokenjson.StatusCode -eq 200) {
+            $AccessToken = $AccessTokenJson.Content | ConvertFrom-Json
+            [PSP_MSGraph_Token]@{
+                TokenScope      = $AccessToken.scope
+                TokenType       = $AccessToken.token_type
+                TokenContent    = $AccessToken.access_token
+                TokenExpiration = $AccessToken.expires_in
+                TokenRefresh    = $AccessToken.refresh_token
+                TokenId         = $AccessToken.id_token
+            }
+        } else {
+            throw "Error: $($AccessTokenJson.StatusCode) $($AccessTokenJson.StatusDescription)"
         }
     } catch {
         $errorMessage = $_.ErrorDetails.Message | ConvertFrom-Json

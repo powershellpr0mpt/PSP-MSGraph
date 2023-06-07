@@ -13,11 +13,24 @@
         http://powershellpr0mpt.com
 #>
 
-#Function Loader
 [cmdletbinding()]
 param()
 Write-Verbose $PSScriptRoot
 
+#Import classes
+Write-Verbose 'Import Classes'
+class PSP_MSGraph_Token {
+    [string]$TokenScope
+    [string]$TokenType
+    [string]$TokenContent
+    [Int64]$TokenExpiration
+    [object]$TokenRefresh
+    [object]$TokenId
+    [int]$StatusCode
+    [string]$StatusDescription
+}
+
+#Function Loader
 Write-Verbose 'Import Private Functions'
 $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
 
