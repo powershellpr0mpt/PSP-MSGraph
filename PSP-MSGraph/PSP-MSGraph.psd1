@@ -12,7 +12,7 @@
     RootModule        = 'PSP-MSGraph.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.0'
+    ModuleVersion     = '0.9.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -24,7 +24,7 @@
     Author            = 'Robert Prust'
 
     # Company or vendor of this module
-    CompanyName       = 'Unknown'
+    CompanyName       = 'powershellpr0mpt'
 
     # Copyright statement for this module
     Copyright         = '(c) Robert Prust. All rights reserved.'
